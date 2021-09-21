@@ -46,9 +46,9 @@ def main():
     def get_url(url):
         r = requests.get(url)
         if r.status_code == requests.codes.ok:
-            print(url, r.status_code)
+            print(url, r.request.method, r.status_code)
         else:
-            print(url)
+            print(url, r.request.method, r.status_code)
             print(r.text)
 
     if test_url_access:
