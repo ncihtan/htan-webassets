@@ -1,7 +1,10 @@
 
 import argparse
 import json
+import urllib
 from collections import defaultdict
+
+from requests.utils import requote_uri
 
 # TODO
 """
@@ -58,14 +61,26 @@ def main():
                     asset_lookup_name = '/'.join(s3key.split('/')[2:-1])  # indexOf "imaging_level_2"
                     m_stories[asset_lookup_name].append(s3key)
 
+    # for k, v in thumbnails.items():
+    #     print(f'{k} => {v}')
     # for k, v in m_stories.items():
     #     print(f'{k} => {v}')
 
     # Map available thumbnail assets
     records = []
     for key in keys:
+        # print(key)
         basename = key.split('.')[0]
-        png = key.replace('.tif', '.png')
+
+        if key.endswith('.tif'):
+            png = key.replace('.tif', '.png')
+        elif key.endswith('.tiff'):
+            png = key.replace('.tiff', '.png')
+        elif key.endswith('.svs'):
+            png = key.replace('.svs', '.png')
+        else:
+            # Skip every other filetype, like csvs
+            continue
 
         rec = {
             "htan_bucket": bucket,
@@ -74,15 +89,15 @@ def main():
             "minerva_story": None,
         }
 
-        if png in thumbnails:
+        if png and png in thumbnails:
             rec['thumbnail'] = {
                 "file": thumbnails[png],
-                "url": S3_ASSETS_URL_FORMAT.format(S3_KEY=thumbnails[png]),
+                "url": requote_uri(S3_ASSETS_URL_FORMAT.format(S3_KEY=thumbnails[png])),
             }
 
         if basename in m_stories:
             files = m_stories.get(basename, [])
-            urls = [S3_ASSETS_URL_FORMAT.format(S3_KEY=f) for f in files]
+            urls = [requote_uri(S3_ASSETS_URL_FORMAT.format(S3_KEY=f)) for f in files]
             rec['minerva_story'] = {'files': files, 'urls': urls}
 
         if rec['thumbnail'] or rec['minerva_story']:
