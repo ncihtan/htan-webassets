@@ -29,12 +29,18 @@ def main():
     if bucket_type == 'aws':
         s3 = session.resource('s3')
     elif bucket_type == 'gcs':
+        # This endpoint is urlencoding spaces into '+' signs prematurely
         s3 = session.resource('s3', endpoint_url='https://storage.googleapis.com')
 
     # List bucket items
     bucket = s3.Bucket(bucket_name)
     for f in bucket.objects.all():
-        print('\t'.join((bucket_name, f.key)))
+        # Keys should be keys
+        key = f.key
+        if bucket_type == 'gcs':
+            key = key.replace('+', ' ')
+
+        print('\t'.join((bucket_name, key)))
 
 
 
