@@ -1,10 +1,7 @@
-
 import sys
 import argparse
 import boto3
 
-
-# Basic python script skeleton
 def process_args():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-b', '--bucket', type=str, required=True, help='Bucket name')
@@ -41,7 +38,6 @@ def main():
             key = key.replace('+', ' ')
 
         print('\t'.join((bucket_name, key)))
-
 
 
 if __name__ == '__main__':

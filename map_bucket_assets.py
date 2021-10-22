@@ -1,7 +1,7 @@
 
+import sys
 import argparse
 import json
-import urllib
 from collections import defaultdict
 
 from requests.utils import requote_uri
@@ -9,9 +9,6 @@ from requests.utils import requote_uri
 # TODO
 """
 1. Probably use regexes to handle prefixes a bit better
-    a) Sep out "imaging_level_2"+ web-assets prefix so it aligns with DCC source bucket
-    b) Replacing `tif` ext with `png`
-    c) Getting basename of prefix without any ext
 2. Expand past imaging_level_2 mapping
 3. Could cleanup thumbnail + minerva_story dict and turn it into a class
 """
@@ -36,22 +33,25 @@ def main():
 
     S3_ASSETS_URL_FORMAT = 'https://%s/{S3_KEY}' % domain_name
 
-    # Parse bucket_manifest
+    # Load up a centers bucket_manifest
     keys = []
     with open(bucket_manifest, 'r') as fh:
         for line in fh:
-            bucket_name, s3key = line.strip().split('\t')
+            _, s3key = line.strip().split('\t')
+            if 'metadata' in line:
+                continue
             keys.append(s3key)
 
-    # Parse target assets
+    # Generate assets LIST, group by thumbnail or minerva_story
     thumbnails = defaultdict(str)
     m_stories = defaultdict(list)
 
-    thumbnails_prefix = f'thumbnails/{bucket_name}/'
-    minerva_stories_prefix = f'minerva_stories/{bucket_name}/'
+    thumbnails_prefix = f'thumbnails/{bucket}/'
+    minerva_stories_prefix = f'minerva_stories/{bucket}/'
     with open(assets, 'r') as fh:
         for line in fh:
-            bucket_name, s3key = line.strip().split('\t')
+            _, s3key = line.strip().split('\t')
+
             if s3key.startswith(thumbnails_prefix):
                 thumbnails['/'.join(s3key.split('/')[2:])] = s3key
             elif s3key.startswith(minerva_stories_prefix):
@@ -69,15 +69,17 @@ def main():
     # Map available thumbnail assets
     records = []
     for key in keys:
-        # print(key)
-        basename = key.split('.')[0]
+        if 'metadata' in key:
+            continue
+
+        basename = key.split('.')[0].strip()
 
         if key.endswith('.tif'):
-            png = key.replace('.tif', '.png')
+            png = key.replace('.tif', '.png').strip()
         elif key.endswith('.tiff'):
-            png = key.replace('.tiff', '.png')
+            png = key.replace('.tiff', '.png').strip()
         elif key.endswith('.svs'):
-            png = key.replace('.svs', '.png')
+            png = key.replace('.svs', '.png').strip()
         else:
             # Skip every other filetype, like csvs
             continue
@@ -89,17 +91,20 @@ def main():
             "minerva_story": None,
         }
 
+        # Check if BUCKET_KEY has a thumbnail ASSET
         if png and png in thumbnails:
             rec['thumbnail'] = {
                 "file": thumbnails[png],
                 "url": requote_uri(S3_ASSETS_URL_FORMAT.format(S3_KEY=thumbnails[png])),
             }
 
+        # Check if BUCKET_KEY has a minerva story ASSET
         if basename in m_stories:
             files = m_stories.get(basename, [])
             urls = [requote_uri(S3_ASSETS_URL_FORMAT.format(S3_KEY=f)) for f in files]
             rec['minerva_story'] = {'files': files, 'urls': urls}
 
+        # Keep record if either contains thumbnail or minerva_story
         if rec['thumbnail'] or rec['minerva_story']:
             records.append(rec)
 
