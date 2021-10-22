@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 boto3 = "*"
 requests = "*"
+synapseclient = "*"
 
 [dev-packages]
 flake8 = "*"
