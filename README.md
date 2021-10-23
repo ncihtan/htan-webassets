@@ -6,6 +6,7 @@ Using the DCC source bucket, find available public webassets and create valid CD
 2. Create a mapping file for each `DCC manifest` to the `asset manifest`
 3. Combine all mapping `<center>` => `<asset>` files into one
 4. Test CDN urls
+5. Push update back to bucket
 
 ## Options
 ```
@@ -15,7 +16,7 @@ make [generate, mapping, combine, test, clean, update] # Options
 
 ## Example usage
 1. Generate manifest files for each DCC. 
-    - You need to generate alteast one manifest for the htan-assets bucket (thumbnails, minerva stories). 
+    - You need to generate atleast one manifest for the htan-assets bucket (thumbnails, minerva stories). 
     - And one DCC `bucket`
 ```
 make generate
