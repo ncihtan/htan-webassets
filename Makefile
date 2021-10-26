@@ -6,7 +6,7 @@ generate:
 	python generate_bucket_manifest.py \
 		-b htan-assets \
 		-t aws \
-		-p htan-dev-admin \
+		-p htan-dev \
 		> outputs/htan-assets-bucket.tsv
 	python generate_bucket_manifest.py \
 		-b htan-dcc-hms \
