@@ -21,7 +21,7 @@ generate:
 	python generate_bucket_manifest.py \
 		-b htan-dcc-washu \
 		-t gcs \
-		-p htan-gcs \
+		-p htan-dcc-gcs \
 		> outputs/htan-dcc-washu-manifest.tsv
 	python generate_synapse_manifest.py \
 		-b htan-dcc-vanderbilt \
@@ -72,6 +72,6 @@ clean:
 	rm outputs/*.json
 
 update:
-	aws s3 --profile htan-dev-admin cp outputs/mapped-assets-all-combined.json s3://htan-assets/assets-manifest.json
+	aws s3 --profile htan-dev cp outputs/mapped-assets-all-combined.json s3://htan-assets/assets-manifest.json
 
 	
