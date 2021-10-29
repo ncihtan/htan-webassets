@@ -72,17 +72,24 @@ def main():
         if 'metadata' in key:
             continue
 
+        if key.startswith('archive'):
+            continue
+
         basename = key.split('.')[0].strip()
 
-        if key.endswith('.tif'):
-            png = key.replace('.tif', '.png').strip()
+        if key.endswith('.ome.tiff'):
+            png = key.replace('.ome.tiff', '.png').strip()
         elif key.endswith('.tiff'):
             png = key.replace('.tiff', '.png').strip()
+        elif key.endswith('.tif'):
+            png = key.replace('.tif', '.png').strip()
         elif key.endswith('.svs'):
             png = key.replace('.svs', '.png').strip()
         else:
             # Skip every other filetype, like csvs
             continue
+
+        # print(png)
 
         rec = {
             "htan_bucket": bucket,
