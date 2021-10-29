@@ -4,7 +4,7 @@ do
     latest=${i%%/}; 
 done
 
-echo $latest
+# echo $latest
 
 # Do diff
 diff $latest/all-combined-urls-tested.txt outputs/all-combined-urls-tested.txt
