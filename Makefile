@@ -1,6 +1,12 @@
 NAME=htan-asset-mapping
 
-all: generate mapping combine test
+all: archive generate mapping combine test diff
+
+archive:
+	./archive.sh
+
+diff:
+	./diff.sh
 
 generate:
 	python generate_bucket_manifest.py \
@@ -33,24 +39,28 @@ mapping:
 		-m outputs/htan-dcc-ohsu-manifest.tsv \
 		-a outputs/htan-assets-bucket.tsv \
 		--cdn d3p249wtgzkn5u.cloudfront.net \
+		| jq \
 		> outputs/mapped-assets-ohsu.json
 	python map_bucket_assets.py \
 		-b htan-dcc-washu \
 		-m outputs/htan-dcc-washu-manifest.tsv \
 		-a outputs/htan-assets-bucket.tsv \
 		--cdn d3p249wtgzkn5u.cloudfront.net \
+		| jq \
 		> outputs/mapped-assets-washu.json
 	python map_bucket_assets.py \
 		-b htan-dcc-hms \
 		-m outputs/htan-dcc-hms-manifest.tsv \
 		-a outputs/htan-assets-bucket.tsv \
 		--cdn d3p249wtgzkn5u.cloudfront.net \
+		| jq \
 		> outputs/mapped-assets-hms.json
 	python map_bucket_assets.py \
 		-b htan-dcc-vanderbilt \
 		-m outputs/htan-dcc-vanderbilt-manifest.tsv \
 		-a outputs/htan-assets-bucket.tsv \
 		--cdn d3p249wtgzkn5u.cloudfront.net \
+		| jq \
 		> outputs/mapped-assets-vanderbilt.json
 
 combine:
@@ -66,10 +76,12 @@ test:
 	python combine_validate_json.py \
 		--test-url-access \
 		--json-files \
-		outputs/mapped-assets-all-combined.json
+		outputs/mapped-assets-all-combined.json \
+		> outputs/all-combined-urls-tested.txt
 clean:
 	rm outputs/*.tsv
 	rm outputs/*.json
+	rm outputs/*.txt
 
 update:
 	aws s3 --profile htan-dev-admin cp outputs/mapped-assets-all-combined.json s3://htan-assets/assets-manifest.json

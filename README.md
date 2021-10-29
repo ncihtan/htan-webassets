@@ -1,6 +1,12 @@
 # HTAN web assets
 Using the DCC source bucket, find available public webassets and create valid CDN backed urls.
 
+### Dependencies
+Install the jq utility for preformatting. Required to produce a readable diff.
+'''
+brew install jq
+'''
+
 ### Steps
 1. Generate manifest file for the htan-assets bucket and also one manifest file per DCC center source buckets.
 2. Create a mapping file for each `DCC manifest` to the `asset manifest`
