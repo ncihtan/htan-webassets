@@ -2,10 +2,10 @@
 Using the DCC source bucket, find available public webassets and create valid CDN backed urls.
 
 ### Dependencies
-Install the jq utility for preformatting. Required to produce a readable diff.
-'''
+Install the `jq` utility for `json` formatting. Required to produce a readable diff.
+```bash
 brew install jq
-'''
+```
 
 ### Steps
 1. Generate manifest file for the htan-assets bucket and also one manifest file per DCC center source buckets.
@@ -15,16 +15,16 @@ brew install jq
 5. Push update back to bucket
 
 ## Options
-```
-make all [generate, mapping, combine, test] # Run all the steps
-make [generate, mapping, combine, test, clean, update] # Options
+```bash
+make all [archive, generate, mapping, combine, test, diff] # Run all the steps
+make [archive, generate, mapping, combine, test, diff, clean, update] # Options
 ```
 
 ## Example usage
 1. Generate manifest files for each DCC. 
     - You need to generate atleast one manifest for the htan-assets bucket (thumbnails, minerva stories). 
     - And one DCC `bucket`
-```
+```bash
 make generate
 -- OR --
 python generate_bucket_manifest.py \
@@ -39,7 +39,7 @@ python generate_bucket_manifest.py \
     > outputs/htan-dcc-hms-manifest.tsv
 ```
 2. Map the DCC `bucket` manifest against the htan-assets `bucket` manifest.
-```
+```bash
 make mapping
 -- OR --
 python map_bucket_assets.py \
@@ -50,7 +50,7 @@ python map_bucket_assets.py \
     > outputs/mapped-assets-ohsu.json
 ```
 3. Combine mapping files
-```
+```bash
 make combine
 -- OR --
 python combine_validate_json.py \
@@ -62,7 +62,7 @@ python combine_validate_json.py \
     > outputs/mapped-assets-all-combined.json
 ```
 4. Test urls
-```
+```bash
 make test
 -- OR --
 python combine_validate_json.py \
@@ -72,7 +72,7 @@ python combine_validate_json.py \
 ```
 
 5. Push mapping file to htan-assets bucket
-```
+```bash
 make update
 -- OR --
 aws s3 --profile <AWS_PROFILE> cp outputs/mapped-assets-all-combined.json s3://htan-assets/assets-manifest.json
