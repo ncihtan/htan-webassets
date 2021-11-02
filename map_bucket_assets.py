@@ -57,6 +57,8 @@ def main():
             elif s3key.startswith(minerva_stories_prefix):
                 if 'Group' in s3key:
                     pass
+                elif '.bak' in s3key:
+                    pass
                 else:
                     asset_lookup_name = '/'.join(s3key.split('/')[2:-1])  # indexOf "imaging_level_2"
                     m_stories[asset_lookup_name].append(s3key)
